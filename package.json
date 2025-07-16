@@ -1,26 +1,26 @@
 {
-	"name": "helloworld-sample",
-	"displayName": "helloworld-sample",
-	"description": "HelloWorld example for VS Code",
+	"name": "camadazero-analyzer",
+	"displayName": "camadazero-analyzer",
+	"description": "CamadaZero code analyzer extension for VS Code",
 	"version": "0.0.1",
-	"publisher": "vscode-samples",
+	"publisher": "ViniciusSouza",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples/helloworld-sample"
+		"url": "https://github.com/ViniciusSouza/vscode-extension-code-analysis"
 	},
 	"engines": {
 		"vscode": "^1.74.0"
 	},
 	"categories": [
-		"Other"
+		"Linters"
 	],
 	"activationEvents": [],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "camadazero.analyze",
+				"title": "camadazero"
 			}
 		]
 	},
