@@ -43,3 +43,28 @@ Also install npx if you're using Yarn or need to ensure it’s available:
 ``` bash
 npm install --save-dev npx
 ```
+
+## Installing semgrep
+
+Install pipx
+
+``` bash
+python -m pip install --user pipx
+python -m pipx ensurepath
+```
+
+install semgrep
+
+```bash
+pipx install semgrep
+```
+
+Verify
+
+```bash
+semgrep --version
+```
+
+## writing rules
+
+Go to [semgrep rules doc](https://semgrep.dev/docs/writing-rules/rule-syntax)
