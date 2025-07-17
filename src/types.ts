@@ -27,7 +27,7 @@ export type SemgrepScanResult = {
   paths: string[],
   skipped_rules: object[],
   time: object
-} | undefined
+}
 
 export type CamadaZeroScanResult = {
   summary: { totalFiles: number, totalIssues: number },
