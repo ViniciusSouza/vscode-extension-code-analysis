@@ -1,3 +1,11 @@
+
+export type CamadaZeroScanConfig = {
+    rulesPath: string;
+    workspacePath: string;
+    outputDir: string;
+    outputPath: string;
+}
+
 export type SemgrepResult = {
   check_id: string,
     end: { line: number, col: number, offset: number },

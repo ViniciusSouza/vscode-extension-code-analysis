@@ -1,9 +1,29 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as types from './types';
 import { handleCamadaZeroScan } from './scanner';
 
 // Entry point of the extension, registering the command
 export function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(context));
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) {
+    vscode.window.showErrorMessage("No workspace folder open.");
+    return;
+  }
+  
+  // Define important paths for the scan
+  const workspacePath = workspaceFolders[0].uri.fsPath;
+  const outputDir = path.join(workspacePath, '.camadazero');
+  const outputPath = path.join(outputDir, 'scan-results.json');
+  const rulesPath = path.join(context.extensionPath, 'semgrep-rules');
+
+  const config: types.CamadaZeroScanConfig = {
+    rulesPath: rulesPath,
+    workspacePath: workspacePath,
+    outputDir: outputDir,
+    outputPath: outputPath
+  };
+  const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(context, config));
   context.subscriptions.push(disposable);
 }
 

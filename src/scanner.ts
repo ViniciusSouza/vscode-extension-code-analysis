@@ -1,29 +1,17 @@
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
-import * as path from 'path';
 import * as fs from 'fs';
 import * as utils from './utils'
 import * as types from './types'
 
 // Command handler for running the CamadaZero Semgrep scan
-export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (!workspaceFolders) {
-    vscode.window.showErrorMessage("No workspace folder open.");
-    return;
-  }
-
-  // Define important paths for the scan
-  const rulesPath = path.join(context.extensionPath, 'semgrep-rules');
-  const workspacePath = workspaceFolders[0].uri.fsPath;
-  const outputDir = path.join(workspacePath, '.camadazero');
-  const outputPath = path.join(outputDir, 'scan-results.json');
+export async function handleCamadaZeroScan(context: vscode.ExtensionContext, config: types.CamadaZeroScanConfig) {
   // Ensure output directory exists
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
+  if (!fs.existsSync(config.outputDir)) {
+    fs.mkdirSync(config.outputDir, { recursive: true });
   }
 
-  const semgrepCmd = `semgrep --config ${rulesPath} --json ${workspacePath}`;
+  const semgrepCmd = `semgrep --config ${config.rulesPath} --json ${config.workspacePath}`;
 
   // Show progress while the scan is executing
   await vscode.window.withProgress({
@@ -44,7 +32,7 @@ export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
 
         // Generate summary and write to disk
         const scanOutput: types.CamadaZeroScanResult = generateScanSummary(result);
-        fs.writeFileSync(outputPath, JSON.stringify(scanOutput, null, 2));
+        fs.writeFileSync(config.outputPath, JSON.stringify(scanOutput, null, 2));
 
         // Convert findings to diagnostics and publish them
         utils.publishDiagnostics("camadazero", result, progress);
