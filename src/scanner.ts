@@ -12,10 +12,10 @@ export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
   }
 
   // Define important paths for the scan
-	const rulesPath = path.join(context.extensionPath, 'semgrep-rules');
-	const workspacePath = workspaceFolders[0].uri.fsPath;
-	const outputDir = path.join(workspacePath, '.camadazero');
-	const outputPath = path.join(outputDir, 'scan-results.json');
+  const rulesPath = path.join(context.extensionPath, 'semgrep-rules');
+  const workspacePath = workspaceFolders[0].uri.fsPath;
+  const outputDir = path.join(workspacePath, '.camadazero');
+  const outputPath = path.join(outputDir, 'scan-results.json');
   // Ensure output directory exists
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -67,10 +67,9 @@ export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
 function generateScanSummary(result: any) {
   const totalFiles = new Set(result.results.map((r: any) => r.path)).size;
   const totalIssues = result.results.length;
-  const percentAffected = totalFiles > 0 ? ((totalIssues / totalFiles) * 100).toFixed(1) + '%' : '0%';
 
   return {
-    summary: { totalFiles, totalIssues, percentAffected },
+    summary: { totalFiles, totalIssues },
     issues: result.results
   };
 }
