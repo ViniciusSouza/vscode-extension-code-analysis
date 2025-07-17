@@ -5,7 +5,7 @@ import * as utils from './utils'
 import * as types from './types'
 
 // Command handler for running the CamadaZero Semgrep scan
-export async function handleCamadaZeroScan(context: vscode.ExtensionContext, config: types.CamadaZeroScanConfig) {
+export async function handleCamadaZeroScan(config: types.CamadaZeroScanConfig) {
   // Ensure output directory exists
   if (!fs.existsSync(config.outputDir)) {
     fs.mkdirSync(config.outputDir, { recursive: true });

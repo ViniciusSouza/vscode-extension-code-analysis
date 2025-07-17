@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     outputDir: outputDir,
     outputPath: outputPath
   };
-  const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(context, config));
+  const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(config));
   context.subscriptions.push(disposable);
 }
 
