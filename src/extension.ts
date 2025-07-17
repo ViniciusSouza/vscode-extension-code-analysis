@@ -23,8 +23,22 @@ export function activate(context: vscode.ExtensionContext) {
     outputDir: outputDir,
     outputPath: outputPath
   };
+
   const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(config));
+  const participant = vscode.chat.createChatParticipant("camadazero.analyze", handler);
+  context.subscriptions.push(participant);
   context.subscriptions.push(disposable);
+}
+
+// Handles chat requests for the "camadazero.analyze" chat participant
+async function handler(
+  request: vscode.ChatRequest,
+  context: vscode.ChatContext,
+  response: vscode.ChatResponseStream,
+  token: vscode.CancellationToken
+): Promise<void> {
+  // Simple implementation: respond with a static message
+  response.markdown("Hello! I am CamadaZero Analyzer. How can I assist you?");
 }
 
 // Clean up extension resources (not used in this case)

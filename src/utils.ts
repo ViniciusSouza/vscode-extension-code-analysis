@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as types from './types';
 
 export type VsCodeProgress = vscode.Progress<{ message?: string; increment?: number }>;
 
@@ -59,11 +60,48 @@ function buildDiagnostics(result: any, progress: VsCodeProgress): Map<string, vs
     const existing = diagnosticsMap.get(filePath) || [];
     diagnosticsMap.set(filePath, [...existing, diagnostic]);
 
-    
-
     // Optional: Add telemetry or logging here to track usage and scan behavior
     console.log(`[CamadaZero] Issue ${index + 1}/${total} processed from file: ${filePath}`);
   });
 
   return diagnosticsMap;
 }
+
+let globalIssues: types.SemgrepResult[]
+// Sends a list of prompts to GitHub Copilot Chat, with user confirmation between each one
+export async function sendIssuesToCopilotChat(issues: types.SemgrepResult[]) {
+  const copilot = vscode.chat.createChatParticipant('camadazero.analyze', chatHandler);
+  
+  globalIssues = issues
+}
+
+async function chatHandler(
+  request: vscode.ChatRequest,
+  context: vscode.ChatContext,
+  response: vscode.ChatResponseStream,
+  token: vscode.CancellationToken
+): Promise<void> {
+  // For demonstration, simply echo the user's prompt back as a response.
+  // In a real implementation, you would call Copilot APIs or process the prompt.
+  if (token.isCancellationRequested) {
+    return;
+  }
+
+  //for (const issue of globalIssues) {
+  const basePrompt = `You are a code assistant that is helping the developer perform changes at his code to be camada zero compliant. A Scan performed by the semgrep found those issues: ${globalIssues}`;
+  const message: vscode.LanguageModelChatMessage[] = [
+                  vscode.LanguageModelChatMessage.User(basePrompt),
+  ]
+
+  const chatResponse = await request.model.sendRequest(
+        message,
+        {},
+        token
+    );
+
+    for await (const fragment of chatResponse.text) {
+      response.markdown(fragment);
+    }
+    return;
+}
+
