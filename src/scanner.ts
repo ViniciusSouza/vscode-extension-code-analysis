@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { exec } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as utils from './utils'
 
 // Command handler for running the CamadaZero Semgrep scan
 export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
@@ -49,7 +50,7 @@ export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
 
           // Convert findings to diagnostics and publish them
           const diagnosticsMap = buildDiagnostics(result, progress);
-          publishDiagnostics(diagnosticsMap);
+          utils.publishDiagnostics("camadazero", diagnosticsMap);
 
           const { totalFiles, totalIssues } = scanOutput.summary;
           vscode.window.showInformationMessage(`CamadaZero scan complete. ${totalIssues} issues in ${totalFiles} files.`);
@@ -105,13 +106,4 @@ function buildDiagnostics(result: any, progress: vscode.Progress<{ increment: nu
   });
 
   return diagnosticsMap;
-}
-
-// Send diagnostics to the VSCode problems panel
-function publishDiagnostics(diagnosticsMap: Map<string, vscode.Diagnostic[]>) {
-  const collection = vscode.languages.createDiagnosticCollection("camadazero");
-  diagnosticsMap.forEach((diags, file) => {
-    const uri = vscode.Uri.file(file);
-    collection.set(uri, diags);
-  });
 }
