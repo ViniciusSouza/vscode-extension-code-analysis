@@ -2,6 +2,27 @@ import * as vscode from 'vscode';
 
 export type VsCodeProgress = vscode.Progress<{ message?: string; increment?: number }>;
 
+export type progressWindowTaskDelegate = (
+  progress: VsCodeProgress,
+  resolve: (value: void | PromiseLike<void>) => void,
+  ...args: any[]
+) => Promise<void>;
+
+// Experimental function for showing progress windows
+export function VsCodeProgressWindow(title: string, delegate: progressWindowTaskDelegate,...args: any[]) {
+  return vscode.window.withProgress({
+    location: vscode.ProgressLocation.Notification,
+    title: title,
+    cancellable: false
+  }, async (progress) => {
+    progress.report({ increment: 0 });
+
+    return new Promise<void>(async (resolve) => {
+      await delegate(progress, resolve, ...args);
+    });
+  });
+}
+
 // Send diagnostics to the VSCode problems panel
 export function publishDiagnostics(name: string, result: any, progress: VsCodeProgress) {
   const diagnosticsMap = buildDiagnostics(result, progress);

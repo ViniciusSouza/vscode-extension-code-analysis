@@ -11,35 +11,31 @@ export async function handleCamadaZeroScan(config: types.CamadaZeroScanConfig) {
     fs.mkdirSync(config.outputDir, { recursive: true });
   }
 
-  const semgrepCmd = `semgrep --config ${config.rulesPath} --json ${config.workspacePath}`;
+  utils.VsCodeProgressWindow("CamadaZero scan in progress...",execSemgrepCmdDelegate, config);
+}
 
-  // Show progress while the scan is executing
-  await vscode.window.withProgress({
-    location: vscode.ProgressLocation.Notification,
-    title: "CamadaZero scan in progress...",
-    cancellable: false
-  }, async (progress) => {
-    progress.report({ increment: 0 });
+function execSemgrepCmdDelegate(progress: utils.VsCodeProgress, resolve: (value: void | PromiseLike<void>) => void, config: types.CamadaZeroScanConfig): Promise<void> {
+  return new Promise<void>((innerResolve) => {
+    const semgrepCmd = `semgrep --config ${config.rulesPath} --json ${config.workspacePath}`;
+    progress.report({ increment: 1, message: "Running Semgrep scan..." });
+    exec(semgrepCmd, (err, stdout, stderr) => {
+      const result: types.SemgrepScanResult | undefined = semgrepScanCallback(err, stdout, stderr, resolve);
+      if (!result) {
+        innerResolve();
+        return;
+      }
+      progress.report({ increment: 50, message: "Processing Semgrep scan results..." });
 
-    return new Promise<void>((resolve) => {
-      // Execute the Semgrep command
-      exec(semgrepCmd, (err, stdout, stderr) => {
-        const result: types.SemgrepScanResult | undefined = semgrepScanCallback(err, stdout, stderr, resolve);
-        if (!result) {
-          return;
-        }
-        progress.report({ increment: 50, message: "Processing semgrep results..." });
+      // Generate summary and write to disk
+      const scanOutput: types.CamadaZeroScanResult = generateScanSummary(result);
+      fs.writeFileSync(config.outputPath, JSON.stringify(scanOutput, null, 2));
 
-        // Generate summary and write to disk
-        const scanOutput: types.CamadaZeroScanResult = generateScanSummary(result);
-        fs.writeFileSync(config.outputPath, JSON.stringify(scanOutput, null, 2));
+      // Convert findings to diagnostics and publish them
+      utils.publishDiagnostics("camadazero", result, progress);
 
-        // Convert findings to diagnostics and publish them
-        utils.publishDiagnostics("camadazero", result, progress);
-
-        const { totalFiles, totalIssues } = scanOutput.summary;
-        progress.report({ increment: 100, message: `CamadaZero scan complete. ${totalIssues} issues in ${totalFiles} files.` });
-      });
+      const { totalFiles, totalIssues } = scanOutput.summary;
+      progress.report({ increment: 100, message: `CamadaZero scan complete. ${totalIssues} issues in ${totalFiles} files.` });
+      innerResolve();
     });
   });
 }
