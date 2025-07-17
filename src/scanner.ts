@@ -51,8 +51,8 @@ export async function handleCamadaZeroScan(context: vscode.ExtensionContext) {
           const diagnosticsMap = buildDiagnostics(result, progress);
           publishDiagnostics(diagnosticsMap);
 
-          const { totalFiles, totalIssues, percentAffected } = scanOutput.summary;
-          vscode.window.showInformationMessage(`CamadaZero scan complete. ${totalIssues} issues in ${totalFiles} files. Affected: ${percentAffected}`);
+          const { totalFiles, totalIssues } = scanOutput.summary;
+          vscode.window.showInformationMessage(`CamadaZero scan complete. ${totalIssues} issues in ${totalFiles} files.`);
         } catch (e) {
           vscode.window.showErrorMessage(`Error parsing Semgrep output: ${e}`);
         } finally {
