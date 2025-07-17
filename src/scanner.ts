@@ -24,7 +24,7 @@ export async function handleCamadaZeroScan(context: vscode.ExtensionContext, con
     return new Promise<void>((resolve) => {
       // Execute the Semgrep command
       exec(semgrepCmd, (err, stdout, stderr) => {
-        const result: types.SemgrepScanResult | undefined = semgrepScanCallback(err, stdout, stderr, resolve);
+        const result: types.SemgrepScanResult = semgrepScanCallback(err, stdout, stderr, resolve);
         if (!result) {
           return;
         }
