@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as types from './types';
+import * as copilot from './copilot';
 import { handleCamadaZeroScan } from './scanner';
 
 // Entry point of the extension, registering the command
@@ -25,20 +26,9 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(config));
-  const participant = vscode.chat.createChatParticipant("camadazero.analyze", handler);
+  const participant = vscode.chat.createChatParticipant("camadazero.analyze", copilot.chatHandler);
   context.subscriptions.push(participant);
   context.subscriptions.push(disposable);
-}
-
-// Handles chat requests for the "camadazero.analyze" chat participant
-async function handler(
-  request: vscode.ChatRequest,
-  context: vscode.ChatContext,
-  response: vscode.ChatResponseStream,
-  token: vscode.CancellationToken
-): Promise<void> {
-  // Simple implementation: respond with a static message
-  response.markdown("Hello! I am CamadaZero Analyzer. How can I assist you?");
 }
 
 // Clean up extension resources (not used in this case)

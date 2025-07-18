@@ -31,8 +31,10 @@
 		"chatParticipants": [
 			 {
 				"id": "camadazero.analyze",
-				"name": "Analyzer",
-				"when": "true"
+				"name": "c0",
+				"fullName": "CamadaZero Analyzer",
+				"isSticky": true,
+				"description": "A chat participant for analyzing CamadaZero issues."
 			}
 		]
 	},

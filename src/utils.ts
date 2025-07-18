@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as types from './types';
+import * as copilot from './copilot';
 
 export type VsCodeProgress = vscode.Progress<{ message?: string; increment?: number }>;
 
@@ -67,41 +68,18 @@ function buildDiagnostics(result: any, progress: VsCodeProgress): Map<string, vs
   return diagnosticsMap;
 }
 
-let globalIssues: types.SemgrepResult[]
+
 // Sends a list of prompts to GitHub Copilot Chat, with user confirmation between each one
 export async function sendIssuesToCopilotChat(issues: types.SemgrepResult[]) {
-  const copilot = vscode.chat.createChatParticipant('camadazero.analyze', chatHandler);
-  
-  globalIssues = issues
+  copilot.setGlobalIssues(issues)
+  vscode.commands.executeCommand("workbench.action.chat.open","@c0 /analyse-semgrep-issues");
 }
 
-async function chatHandler(
-  request: vscode.ChatRequest,
-  context: vscode.ChatContext,
-  response: vscode.ChatResponseStream,
-  token: vscode.CancellationToken
-): Promise<void> {
-  // For demonstration, simply echo the user's prompt back as a response.
-  // In a real implementation, you would call Copilot APIs or process the prompt.
-  if (token.isCancellationRequested) {
-    return;
-  }
+export async function readRangeFromFile(issue: types.SemgrepResult): Promise<string | undefined> {
+  const uri = vscode.Uri.file(issue.path);
+  const document = await vscode.workspace.openTextDocument(uri);
 
-  //for (const issue of globalIssues) {
-  const basePrompt = `You are a code assistant that is helping the developer perform changes at his code to be camada zero compliant. A Scan performed by the semgrep found those issues: ${globalIssues}`;
-  const message: vscode.LanguageModelChatMessage[] = [
-                  vscode.LanguageModelChatMessage.User(basePrompt),
-  ]
-
-  const chatResponse = await request.model.sendRequest(
-        message,
-        {},
-        token
-    );
-
-    for await (const fragment of chatResponse.text) {
-      response.markdown(fragment);
-    }
-    return;
+  const range = new vscode.Range(issue.start.line, issue.start.col, issue.end.line, issue.end.col);
+  return document.getText(range);
 }
 
