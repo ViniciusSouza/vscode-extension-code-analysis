@@ -19,6 +19,8 @@ export async function chatHandler(
     return;
   }
 
+  response.markdown('Hello! I am the **Camada Zero Assistant**.\n I am here to help you fix the issues found by the Camada Zero scan. \n');
+
   //TODO: use response.markdown to send information regarding the issue to the user
   //TODO: when the message is sent to the chat, is it possible to use the agent mode?
   
