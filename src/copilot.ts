@@ -25,6 +25,16 @@ export async function chatHandler(
   let i = 0;
   for (const issue of globalIssues) {
     const code = await utils.readRangeFromFile(issue);
+    response.markdown(`\n\n ## Issue found
+  **ID:** ${issue.check_id}  
+  **Message:** ${issue.extra.message}  
+  **File:** \`${issue.path}\`
+
+  **Code:**
+  \`\`\`
+  ${code}
+  \`\`\`
+  `);
     const basePrompt = `You are a code assistant that is helping the developer
     perform changes at his code to be camada zero compliant.
     A application that is camada zero compliant is a application that uses gRPC call to write data the
