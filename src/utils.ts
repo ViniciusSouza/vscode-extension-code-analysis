@@ -79,7 +79,12 @@ export async function readRangeFromFile(issue: types.SemgrepResult): Promise<str
   const uri = vscode.Uri.file(issue.path);
   const document = await vscode.workspace.openTextDocument(uri);
 
-  const range = new vscode.Range(issue.start.line, issue.start.col, issue.end.line, issue.end.col);
+  const range = new vscode.Range(
+    issue.start.line - 1,
+    issue.start.col - 1,
+    issue.end.line - 1,
+    issue.end.col - 1
+  );
   return document.getText(range);
 }
 
