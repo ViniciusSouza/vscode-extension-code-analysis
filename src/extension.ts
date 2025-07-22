@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as types from './types';
+import * as copilot from './copilot';
 import { handleCamadaZeroScan } from './scanner';
 
 // Entry point of the extension, registering the command
@@ -23,7 +24,10 @@ export function activate(context: vscode.ExtensionContext) {
     outputDir: outputDir,
     outputPath: outputPath
   };
+
   const disposable = vscode.commands.registerCommand('camadazero.analyze', () => handleCamadaZeroScan(config));
+  const participant = vscode.chat.createChatParticipant("camadazero.analyze", copilot.chatHandler);
+  context.subscriptions.push(participant);
   context.subscriptions.push(disposable);
 }
 

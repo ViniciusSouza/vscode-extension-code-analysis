@@ -10,7 +10,6 @@ export async function handleCamadaZeroScan(config: types.CamadaZeroScanConfig) {
   if (!fs.existsSync(config.outputDir)) {
     fs.mkdirSync(config.outputDir, { recursive: true });
   }
-
   utils.VsCodeProgressWindow("CamadaZero scan in progress...",execSemgrepCmdDelegate, config);
 }
 
@@ -18,7 +17,7 @@ function execSemgrepCmdDelegate(progress: utils.VsCodeProgress, resolve: (value:
   return new Promise<void>((innerResolve) => {
     const semgrepCmd = `semgrep --config ${config.rulesPath} --json ${config.workspacePath}`;
     progress.report({ increment: 1, message: "Running Semgrep scan..." });
-    exec(semgrepCmd, (err, stdout, stderr) => {
+    exec(semgrepCmd, async (err, stdout, stderr) => {
       const result: types.SemgrepScanResult | undefined = semgrepScanCallback(err, stdout, stderr, resolve);
       if (!result) {
         innerResolve();
@@ -35,6 +34,8 @@ function execSemgrepCmdDelegate(progress: utils.VsCodeProgress, resolve: (value:
 
       const { totalFiles, totalIssues } = scanOutput.summary;
       progress.report({ increment: 100, message: `CamadaZero scan complete. ${totalIssues} issues in ${totalFiles} files.` });
+
+      await utils.sendIssuesToCopilotChat(result.results);
       innerResolve();
     });
   });

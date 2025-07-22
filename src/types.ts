@@ -10,6 +10,8 @@ export type SemgrepResult = {
   check_id: string,
     end: { line: number, col: number, offset: number },
     start: { line: number, col: number, offset: number },
+    path: string,
+    fix: string,
     extra: { 
       engine_kind:string,
       message: string,

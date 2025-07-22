@@ -10,7 +10,9 @@
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--enable-proposed-api",
+				"camadazero-analyzer"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"

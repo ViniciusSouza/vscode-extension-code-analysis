@@ -4,6 +4,11 @@
 	"description": "CamadaZero code analyzer extension for VS Code",
 	"version": "0.0.1",
 	"publisher": "ViniciusSouza",
+	"enabledApiProposals": [
+		"chatProvider",
+		"chatEditing",
+		"chatParticipantPrivate"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ViniciusSouza/vscode-extension-code-analysis"
@@ -21,6 +26,15 @@
 			{
 				"command": "camadazero.analyze",
 				"title": "camadazero"
+			}
+		],
+		"chatParticipants": [
+			 {
+				"id": "camadazero.analyze",
+				"name": "c0",
+				"fullName": "CamadaZero Analyzer",
+				"isSticky": true,
+				"description": "A chat participant for analyzing CamadaZero issues."
 			}
 		]
 	},

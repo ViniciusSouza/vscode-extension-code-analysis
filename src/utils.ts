@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as types from './types';
+import * as copilot from './copilot';
 
 export type VsCodeProgress = vscode.Progress<{ message?: string; increment?: number }>;
 
@@ -59,11 +61,30 @@ function buildDiagnostics(result: any, progress: VsCodeProgress): Map<string, vs
     const existing = diagnosticsMap.get(filePath) || [];
     diagnosticsMap.set(filePath, [...existing, diagnostic]);
 
-    
-
     // Optional: Add telemetry or logging here to track usage and scan behavior
     console.log(`[CamadaZero] Issue ${index + 1}/${total} processed from file: ${filePath}`);
   });
 
   return diagnosticsMap;
 }
+
+
+// Sends a list of prompts to GitHub Copilot Chat, with user confirmation between each one
+export async function sendIssuesToCopilotChat(issues: types.SemgrepResult[]) {
+  copilot.setGlobalIssues(issues)
+  vscode.commands.executeCommand("workbench.action.chat.open","@c0 /analyse-semgrep-issues");
+}
+
+export async function readRangeFromFile(issue: types.SemgrepResult): Promise<string | undefined> {
+  const uri = vscode.Uri.file(issue.path);
+  const document = await vscode.workspace.openTextDocument(uri);
+
+  const range = new vscode.Range(
+    issue.start.line - 1,
+    issue.start.col - 1,
+    issue.end.line - 1,
+    issue.end.col - 1
+  );
+  return document.getText(range);
+}
+

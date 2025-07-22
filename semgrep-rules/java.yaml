@@ -1,31 +1,41 @@
 rules:
-  - id: direct-db-write
-    pattern: |
-      class $CLASS extends JpaRepository<...> {
-        ...
-      }
-    message: "Replace direct DB usage with CompassData client."
-    severity: WARNING
-    languages: [java]
+  # - id: direct-db-write
+  #   pattern: |
+  #     class $CLASS extends JpaRepository<...> {
+  #       ...
+  #     }
+  #   message: "Replace direct DB usage with CompassData client."
+  #   severity: WARNING
+  #   languages: [java]
 
-  - id: missing-envelope
-    pattern: |
-      compassDataClient.write($DATA)
-    message: "Missing envelope wrapping for CompassData write."
+  # - id: missing-envelope
+  #   pattern: |
+  #     compassDataClient.write($DATA)
+  #   message: "Missing envelope wrapping for CompassData write."
+  #   severity: ERROR
+  #   languages: [java]
+  #   fix: |
+  #     compassDataClient.write(wrapWithEnvelope($DATA))
+
+  # - id: class-implements-interface
+  #   patterns:
+  #     - pattern: |
+  #         class $CLASS implements $INTERFACE {
+  #           ...
+  #         }
+  #   message: "Class '$CLASS' implements interface '$INTERFACE'."
+  #   severity: INFO
+  #   languages: [java]
+  #   metadata:
+  #     category: test
+
+  - id: detect-repository-save
+    pattern: $REPO.save($DATA)
+    languages: [java]
+    message: "Direct call to repository.save — consider replacing with CompassDataClient gRPC call"
     severity: ERROR
-    languages: [java]
-    fix: |
-      compassDataClient.write(wrapWithEnvelope($DATA))
-
-  - id: class-implements-interface
-    patterns:
-      - pattern: |
-          class $CLASS implements $INTERFACE {
-            ...
-          }
-    message: "Class '$CLASS' implements interface '$INTERFACE'."
-    severity: INFO
-    languages: [java]
     metadata:
-      category: test
+      category: write-operation
+    fix: "compassDataClient.write(wrapWithEnvelope($DATA))"
+
     
