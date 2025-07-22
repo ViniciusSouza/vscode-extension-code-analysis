@@ -1,70 +1,115 @@
-# Hello World Sample
+# CamadaZero Analyzer
 
-This is a Hello World example that shows you how to use VS Code API.
+A VS Code extension for static code analysis using Semgrep rules to identify security vulnerabilities, code smells, and potential issues in your codebase.
 
-Guide for this sample: https://code.visualstudio.com/api/get-started/your-first-extension.
+## Features
+
+- **Static Code Analysis**: Runs Semgrep scans on your workspace
+- **Real-time Diagnostics**: Shows issues directly in VS Code's Problems panel
+- **Custom Rules**: Uses configurable Semgrep rules for targeted analysis
+- **Progress Tracking**: Visual progress indicators during scans
+- **Detailed Reports**: Generates JSON reports with scan results and statistics
 
 ## Demo
 
 ![demo](demo.gif)
 
-## VS Code API
+## Prerequisites
 
-### `vscode` module
+### Install Semgrep
 
-- [`commands.registerCommand`](https://code.visualstudio.com/api/references/vscode-api#commands.registerCommand)
-- [`window.showInformationMessage`](https://code.visualstudio.com/api/references/vscode-api#window.showInformationMessage)
-
-### Contribution Points
-
-- [`contributes.commands`](https://code.visualstudio.com/api/references/contribution-points#contributes.commands)
-
-## Running the Sample
-
-- Run `npm install` in terminal to install dependencies
-- Run the `Run Extension` target in the Debug View. This will:
-  - Start a task `npm: watch` to compile the code
-  - Run the extension in a new VS Code window
-
-## Initialize Your Project
-
-``` bash
-npm init -y
-```
-
-Then add the VSCode extension development dependencies:
-
-``` bash
-npm install --save-dev typescript @types/node @types/vscode vscode
-```
-
-Also install npx if you're using Yarn or need to ensure it’s available:
-
-``` bash
-npm install --save-dev npx
-```
-
-## Installing semgrep
-
-Install pipx
-
-``` bash
-python -m pip install --user pipx
-python -m pipx ensurepath
-```
-
-install semgrep
+#### Using pipx (recommended)
 
 ```bash
+python -m pip install --user pipx
+python -m pipx ensurepath
 pipx install semgrep
 ```
 
-Verify
+#### Verify Installation
 
 ```bash
 semgrep --version
 ```
 
-## writing rules
+## Installation
 
-Go to [semgrep rules doc](https://semgrep.dev/docs/writing-rules/rule-syntax)
+1. Clone this repository
+2. Run `npm install` to install dependencies
+3. Open in VS Code and press `F5` to run the extension in a new Extension Development Host window
+
+## Usage
+
+1. Open a workspace/folder in VS Code
+2. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) to open the command palette
+3. Type "camadazero" and select the **CamadaZero** command
+4. The extension will:
+   - Run Semgrep analysis on your workspace
+   - Show progress notifications
+   - Display found issues in the Problems panel
+   - Generate a detailed report
+
+## Configuration
+
+The extension uses Semgrep rules located in the `semgrep-rules/` directory. You can customize these rules based on your needs.
+
+### Writing Custom Rules
+
+Refer to the [Semgrep Rules Documentation](https://semgrep.dev/docs/writing-rules/rule-syntax) for guidance on creating custom rules.
+
+## Development
+
+### Setup
+
+```bash
+npm init -y
+npm install --save-dev typescript @types/node @types/vscode
+npm install --save-dev npx  # if using Yarn or need to ensure availability
+```
+
+### Running the Extension
+
+- Run `npm install` to install dependencies
+- Press `F5` or run the `Run Extension` target in the Debug View
+- This will start the `npm: watch` task and launch the extension in a new VS Code window
+
+## VS Code API Usage
+
+### Commands
+
+- [`commands.registerCommand`](https://code.visualstudio.com/api/references/vscode-api#commands.registerCommand)
+- [`window.withProgress`](https://code.visualstudio.com/api/references/vscode-api#window.withProgress)
+
+### Diagnostics
+
+- [`languages.createDiagnosticCollection`](https://code.visualstudio.com/api/references/vscode-api#languages.createDiagnosticCollection)
+
+### Contribution Points
+
+- [`contributes.commands`](https://code.visualstudio.com/api/references/contribution-points#contributes.commands)
+
+## File Structure
+
+```plaintext
+├── src/
+│   ├── extension.ts      # Main extension entry point
+│   ├── scanner.ts        # Core scanning logic
+│   ├── utils.ts          # Utility functions
+│   ├── types.ts          # Type definitions
+│   └── copilot.ts        # GitHub Copilot integration
+├── semgrep-rules/
+│   └── java.yaml         # Semgrep rules configuration
+└── package.json          # Extension manifest
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the terms specified in the LICENSE file.
